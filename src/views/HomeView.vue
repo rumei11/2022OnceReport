@@ -1,265 +1,144 @@
 <template>
-  <div class="home">
-    <hr />
-    <img src="../assets/logo.png" id="myimg" alt="" />
-    <img
-      v-if="isCopyed.base64 != ''"
-      :src="isCopyed.base64"
-      id="myimg"
-      alt=""
-    />
-    <hr />
-    <input type="file" maxlength="1" @click="fileC" @input="fileI" />
-
-    <video
-      poster="../assets/Snipaste_2022-08-12_18-33-05.png"
-      :ref="'myVideoDown'"
-      :controls="true"
-    >
-      <source v-if="Boolean(vSource)" :src="vSource" type="video/mp4" />
-    </video>
-
-    <div class="videos">
-      <el-carousel
-        type="card"
-        direction="vertical"
-        height="320px"
-        trigger="click"
-        :autoplay="false"
-      >
-        <el-carousel-item v-for="item in videolist" :key="item">
-          <!-- <h3 class="medium">{{ item }}</h3> -->
-          <div>
-            <video
-              poster="../assets/Snipaste_2022-08-12_18-33-05.png"
-              :ref="'myVideo' + item"
-              :controls="isPlay"
-            >
-              <source :src="getUrl" type="video/mp4" />
-            </video>
-            <img
-              src="../assets/zhuanlan_icon_play@2x.png"
-              alt=""
-              @click="playmethod('myVideo' + item)"
-            />
-          </div>
-        </el-carousel-item>
-      </el-carousel>
-    </div>
-
-    <hr />
-    <HelloWorld></HelloWorld>
-    <HelloWorldBro :msg="msg"></HelloWorldBro>
-    <input type="text" maxlength="12141" v-model="famsg" />
-    <hr />
-    <el-button type="primary" @click="isShow = !isShow">切换</el-button>
-    <!-- <transition name="fade" appear enter-active-class="enter-active" enter-from-class="enter-from"
-      leave-active-class="leave-active" leave-to-class="leave-to" @before-enter="be" @enter="en" @after-enter="ae"
-      @enter-cancelled="ec">
-      <div class="textarea" v-if="isShow">hello word</div>
-    </transition> -->
-
-    <transition
-      appear
-      enter-active-class="animate__animated animate__backInDown"
-      leave-active-class="animate__animated animate__backOutDown"
-    >
-      <div class="textarea" v-if="isShow">hello nihao</div>
-    </transition>
-  </div>
+  <!-- <img src="../assets/logo_cop.png" class="fixed top-3 left-3 z-50 w-40" alt=""> -->
+  <swiper id="swiperList2" v-if="list2" :slides-per-view="1" :direction="'horizontal'" :scrollbar="{ draggable: false }"
+    :modules="data.modules" :createElements="true" @swiper="setControlledSwiper" navigation ref="newYearSwiper">
+    <swiper-slide class="overflow-hidden" v-for="(item, index) in list2" :key="index">
+      <component v-model="currentValueobj[index]" :contInfo="TextInfoArr[index]" :is="list2[index].components">
+      </component>
+    </swiper-slide>
+  </swiper>
 </template>
 
-<script lang="ts" setup>
-import HelloWorld from "@/components/HelloWorld.vue";
-import HelloWorldBro from "@/components/HelloWorldBro.vue";
-import {
-  getCurrentInstance,
-  provide,
-  reactive,
-  readonly,
-  ref,
-  toRaw,
-  toRefs,
-} from "vue";
-import type { ComponentCustomOptions, ComponentInternalInstance } from "vue";
-import type { Ref, UnwrapNestedRefs } from "vue";
-import getImageBase64 from "../hooks/toBase64";
+<script setup lang="ts">
+import { type ComponentCustomOptions } from 'vue'
+//第三步-使用插件（同时在模板中swiper标签使用）
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import SwiperCore, { Pagination, Navigation, Autoplay } from 'swiper'
+import 'swiper/swiper-bundle.css'
+import Review2022 from './components/Review2022.vue'
+import ForFuture2023 from './components/ForFuture2023.vue'
+import Summarize2022 from './components/Summarize2022.vue'
+import Blessing from './components/Blessing.vue'
+import StartPage from './components/StartPage.vue'
 
-type base64 = {
-  base64: string;
-};
+// 使用
+SwiperCore.use([Pagination, Autoplay, Navigation])
 
-let isCopyed = reactive<base64>({ base64: "" });
+const newYearSwiper = ref<any>()
 
-let proIsCopyed = toRefs(isCopyed);
-const getUrl64 = async () => {
-  let res = await getImageBase64({ $el: "myimg" });
-  isCopyed.base64 = res.base64;
-  console.log(proIsCopyed, isCopyed, 1111);
-};
+onMounted(() => {
+  window.addEventListener('keypress', (target: KeyboardEvent) => {
+    let elementLeft = document.getElementById('swiperList2')?.children as any;
+    let eventClick = new Event("click", { "bubbles": true, "cancelable": false });
+    switch (target.charCode) {
+      case 32:
+        elementLeft = elementLeft[2]
+        break;
+      case 13:
+        elementLeft = elementLeft[1]
+        break;
+      default:
+        break;
+    }
+    elementLeft.dispatchEvent(eventClick)
+  })
+})
 
-getUrl64();
+// 内容数据 数据格式
+type ItemInfo = {
+  title?: string,
+  cont?: string
+}
+type CompInfo = {
+  infoList: Array<ItemInfo>,
+  totalLength: number
+}
+const TextInfoArr = reactive<Array<CompInfo>>([
+  {
+    infoList: [],
+    totalLength: 0
+  },
+  {
+    infoList: [
+      { title: '参与项目：', cont: '康养招投标门户网、后台管理系统；维修资金公共服务门户网、综合查询；部分移动端交存H5;' },
+      { title: '新增技能：', cont: 'APIJSON、Micro-app、TS、Tailwind CSS、Uni-app' }
+    ],
+    totalLength: 2
+  },
+  {
+    infoList: [
+      { title: '全局意识、专业水平不足', cont: '深入了解业务场景、深耕专业技术' },
+      { title: '满足于常态、主动性不强', cont: '制定更高的目标和计划' },
+      { title: '心态、脾气控制不佳', cont: '自我克制、换位思考、呼吸调整' },
+    ],
+    totalLength: 3
+  },
+  {
+    infoList: [],
+    totalLength: 0
+  },
+  {
+    infoList: [],
+    totalLength: 0
+  }
+])
 
-const isShow: Ref<boolean> = ref<boolean>(true);
 
-const be = () => {
-  console.log("be");
-};
-const en = () => {
-  console.log("en");
-};
-const ae = () => {
-  console.log("ae");
-};
-const ec = () => {
-  console.log("ec");
-};
-const msg = ref<string>("");
+const currentValueobj = reactive<{
+  [a: number]: number
+}>({
+  0: 1,
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 1,
+})
 
-const isPlay = ref<boolean>(false);
+const swiperInstance = ref<any>(null)
 
-const videolist = [1, 2, 3, 4];
+const setControlledSwiper = (swiper: any) => {
+  swiperInstance.value = swiper
+}
 
-const arr: UnwrapNestedRefs<Array<Number>> = reactive<Array<number>>([]);
+const data = ref<any>({
+  modules: [Autoplay]
+})
 
-const famsg = ref<string>("211");
+type Dynamic = {
+  name: number
+  components: ComponentCustomOptions
+}
 
-provide("famsg", readonly(famsg));
-
-// 获取当前实例
-let { appContext } = getCurrentInstance() as ComponentInternalInstance;
-console.log(appContext?.config?.globalProperties?.$Bus, "11");
-const obj = getCurrentInstance();
-
-const playmethod = (name: string): void => {
-  let target = obj?.proxy?.$refs[name] as Array<HTMLVideoElement>;
-  console.log(target[0]?.play());
-};
-
-const fileC = (...args: any): void => {
-  console.log(args, "c");
-};
-
-let vSource = ref<string>("");
-
-const fileI = (event: any) => {
-  let fileList = event?.target?.files as Array<File>;
-  const file = new FileReader();
-  const fileB = new FileReader();
-  fileB.readAsArrayBuffer(fileList[0]);
-  file.readAsDataURL(fileList[0]);
-
-  vSource.value = window.URL.createObjectURL(fileList[0]);
-  // file.onload = (e: any) => {
-  //   const res = (e?.target?.result);
-  //   console.log(res);
-
-  // }
-  // fileB.onload = (e: any) => {
-  //   console.log(e?.target);
-  //   vSource.value = window.URL.createObjectURL(e?.target?.result);
-  // }
-};
-
-const getUrl = () => new URL(`../assets/video/1.mp4`, import.meta.url).href;
+const list2 = reactive<Array<Dynamic>>([
+  { name: 11, components: markRaw(StartPage) },
+  { name: 1, components: markRaw(Review2022) },
+  { name: 2, components: markRaw(Summarize2022) },
+  // { name: 3, components: markRaw(ForFuture2023) },
+  { name: 4, components: markRaw(Blessing) }
+])
+/**
+ * 键盘敲击事件
+ * @param keyInfo
+ * @returns null
+ */
 </script>
 
-<style lang="scss" scoped>
-.home {
-  overflow: hidden;
+<style lang="scss">
+li.listItem,
+.swiper,
+.swiper-wrapper,
+.swiper-slide,
+section {
   height: 100%;
 }
 
-.textarea {
-  width: 200px;
-  height: 200px;
-  margin: 20px auto;
-  background-color: aqua;
-  text-align: center;
-  font-size: 20px;
-  color: red;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.enter-from,
-.leave-to {
-  width: 0;
-  height: 0;
-  opacity: 0;
-  font-size: 0;
-  color: #fff;
-}
-
-.enter-active,
-.leave-active {
-  transition: all 2s;
-}
-
-el-button {
-  border: 1px solid red;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.videos {
-  width: 460px;
-  height: 460px;
-
-  .el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 200px;
-    margin: 0;
-  }
-
-  .el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-  }
-
-  .el-carousel__item:nth-child(2n + 1) {
-    background-color: #d3dce6;
-  }
-
-  .el-carousel__item {
-    width: 100%;
-    height: 320px;
-
-    div {
-      width: 100%;
-      height: 100%;
-      display: relative;
-    }
-
-    video {
-      width: 100%;
-      height: 320px;
-      object-fit: fill;
-    }
-  }
-
-  .is-active {
-    transform: translateY(0) !important;
-  }
-
-  .el-carousel__button {
-    background-color: #ffffff;
-    height: 24px;
-  }
-}
-
-:v-deep {
-  .is-active {
-    img {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      position: absolute;
-      z-index: 999;
-      top: calc(50% - 20px);
-      left: calc(50% - 20px);
-    }
+.swiper {
+  [class*='swiper-button'] {
+    display: block;
+    width: 0;
+    height: 0rem;
+    overflow: hidden;
   }
 }
 </style>
+

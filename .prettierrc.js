@@ -38,7 +38,7 @@ module.exports = {
    * @default "as-needed"
    * @type {"as-needed"|"consistent"|"preserve"}
    */
-  quoteProps: 'as-needed',
+  // quoteProps: 'as-needed',
   /**
    * jsx中是否使用单引号替代双引号
    * @default false

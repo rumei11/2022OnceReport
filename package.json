@@ -20,6 +20,7 @@
     "pinia": "^2.0.23",
     "rollup-plugin-visualizer": "^5.8.3",
     "sass": "^1.55.0",
+    "swiper": "^8.4.5",
     "unplugin-icons": "^0.14.13",
     "unplugin-vue-components": "^0.22.9",
     "vite-plugin-inspect": "^0.7.8",

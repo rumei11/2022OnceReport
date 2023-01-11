@@ -11,6 +11,7 @@ import Loading from './components/myLoading/index'
 import myUse from './plugin/myUse'
 import '@/assets/style/index.css'
 import '@/assets/style/reload.scss'
+import Swiper from 'swiper'
 
 export const app = createApp(App)
 
